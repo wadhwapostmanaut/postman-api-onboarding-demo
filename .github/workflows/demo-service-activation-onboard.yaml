@@ -1,0 +1,33 @@
+name: Postman API Onboarding - Demo Service Activation API
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: write
+
+jobs:
+  onboard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Run Postman API onboarding
+        uses: postman-cs/postman-api-onboarding-action@v1
+        with:
+          # ----------------------------------------
+          # CHANGE THESE 5 LINES FOR EACH NEW SERVICE
+          # ----------------------------------------
+          project-name: demo-service-activation-api
+          domain: Activation
+          domain-code: ACT
+          spec-path: open-api-specs/demo-service-activation-api-openapi.yaml
+          env-runtime-urls-json: '{"prod":"https://api.demo.example.com/activation/v1","staging":"https://api-staging.demo.example.com/activation/v1"}'
+          # ----------------------------------------
+          environments-json: '["prod","staging"]'
+          postman-api-key: ${{ secrets.POSTMAN_API_KEY }}
+          postman-access-token: ${{ secrets.POSTMAN_ACCESS_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          gh-fallback-token: ${{ secrets.GH_FALLBACK_TOKEN }}
