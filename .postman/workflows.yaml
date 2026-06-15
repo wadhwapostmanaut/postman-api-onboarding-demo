@@ -1,0 +1,8 @@
+workflows:
+  syncSpecToCollection:
+    - spec: ../open-api-specs/demo-service-activation-api-openapi.yaml
+      collection: ../postman/collections/demo-service-activation-api
+    - spec: ../open-api-specs/demo-service-activation-api-openapi.yaml
+      collection: ../postman/collections/[Smoke] demo-service-activation-api
+    - spec: ../open-api-specs/demo-service-activation-api-openapi.yaml
+      collection: ../postman/collections/[Contract] demo-service-activation-api
