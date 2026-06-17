@@ -1,0 +1,5 @@
+type: folder
+name: '{activationId}'
+items:
+  - ref: ./cancel/folder.yaml
+  - ref: ./Get activation details.request.yaml
