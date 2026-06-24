@@ -35,3 +35,4 @@ jobs:
           postman-access-token: ${{ secrets.POSTMAN_ACCESS_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           gh-fallback-token: ${{ secrets.GH_FALLBACK_TOKEN }}
+          workspace-team-id: ${{ vars.POSTMAN_WORKSPACE_TEAM_ID }}
