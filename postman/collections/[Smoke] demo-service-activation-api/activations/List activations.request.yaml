@@ -1,0 +1,127 @@
+type: http
+name: List activations
+url: '{{baseUrl}}/activations?customerId=cust_a1b2c3d4&status=pending&serviceType=mobile&page=1&pageSize=20'
+method: GET
+headers:
+  - key: Accept
+    value: application/json
+queryParams:
+  - key: customerId
+    value: cust_a1b2c3d4
+    description: Filter activations by customer ID
+  - key: status
+    value: pending
+    description: Filter activations by status
+  - key: serviceType
+    value: mobile
+    description: Filter activations by service type
+  - key: page
+    value: '1'
+    description: Page number for pagination (1-based)
+  - key: pageSize
+    value: '20'
+    description: Number of items per page
+scripts:
+  - type: afterResponse
+    code:
+      - // [Smoke] Auto-generated test assertions
+      - pm.test('Status code is successful (2xx)', function () {
+      - '    pm.response.to.be.success;'
+      - '});'
+      - pm.test('Response time is acceptable', function () {
+      - '    var threshold = parseInt(pm.environment.get(''RESPONSE_TIME_THRESHOLD'') || ''2000'', 10);'
+      - '    pm.expect(pm.response.responseTime).to.be.below(threshold);'
+      - '});'
+      - pm.test('Response body is not empty', function () {
+      - '    if (pm.response.code !== 204) {'
+      - '        var body = pm.response.text();'
+      - '        pm.expect(body.length).to.be.above(0);'
+      - '    }'
+      - '});'
+    language: text/javascript
+examples:
+  - response:
+      statusCode: 200
+      statusText: OK
+      body:
+        type: json
+        content: |-
+          {
+            "activations": [
+              {
+                "activationId": "act_q1w2e3r4",
+                "customerId": "cust_a1b2c3d4",
+                "serviceType": "mobile",
+                "planCode": "DEMO-MOB-50GB",
+                "status": "completed",
+                "requestedAt": "2026-06-01T10:00:00Z",
+                "updatedAt": "2026-06-01T10:12:00Z",
+                "completedAt": "2026-06-01T10:12:00Z",
+                "serviceId": "svc_m0b1l3"
+              }
+            ],
+            "pagination": {
+              "page": 1,
+              "pageSize": 20,
+              "totalPages": 1,
+              "totalItems": 1,
+              "hasNext": false,
+              "hasPrevious": false
+            }
+          }
+      headers:
+        - key: Content-Type
+          value: application/json
+    name: Successful response with activation list
+  - response:
+      statusCode: 400
+      statusText: Bad Request
+      body:
+        type: json
+        content: |-
+          {
+            "error": "VALIDATION_ERROR",
+            "message": "Invalid request parameters",
+            "details": {
+              "field": "planCode",
+              "issue": "Unknown plan code"
+            },
+            "code": "VALIDATION_ERROR",
+            "timestamp": "2026-06-01T10:00:00Z"
+          }
+      headers:
+        - key: Content-Type
+          value: application/json
+    name: Bad request - invalid input
+  - response:
+      statusCode: 401
+      statusText: Unauthorized
+      body:
+        type: json
+        content: |-
+          {
+            "error": "UNAUTHORIZED",
+            "message": "Authentication token is required",
+            "code": "AUTHENTICATION_ERROR",
+            "timestamp": "2026-06-01T10:00:00Z"
+          }
+      headers:
+        - key: Content-Type
+          value: application/json
+    name: Unauthorized - invalid or missing authentication
+  - response:
+      statusCode: 500
+      statusText: Internal Server Error
+      body:
+        type: json
+        content: |-
+          {
+            "error": "INTERNAL_SERVER_ERROR",
+            "message": "An unexpected error occurred",
+            "code": "SERVER_ERROR",
+            "timestamp": "2026-06-01T10:00:00Z"
+          }
+      headers:
+        - key: Content-Type
+          value: application/json
+    name: Internal server error

@@ -1,0 +1,22 @@
+workspace:
+  id: 86f25c8e-eb18-4745-a5a2-53aebec95276
+localResources:
+  collections:
+    - ../postman/collections/demo-service-activation-api
+    - ../postman/collections/[Smoke] demo-service-activation-api
+    - ../postman/collections/[Contract] demo-service-activation-api
+  environments:
+    - ../postman/environments/prod.postman_environment.json
+    - ../postman/environments/staging.postman_environment.json
+  specs:
+    - ../open-api-specs/demo-service-activation-api-openapi.yaml
+cloudResources:
+  collections:
+    ../postman/collections/demo-service-activation-api: 53274222-27ebd770-ebfb-4626-a9e7-0b3d5043b5f0
+    ../postman/collections/[Smoke] demo-service-activation-api: 53274222-67ae764d-11f2-47dc-a2bf-3aede551e1ff
+    ../postman/collections/[Contract] demo-service-activation-api: 53274222-3133730b-e0cd-4d6c-95f4-92eb2d66c5cb
+  environments:
+    ../postman/environments/prod.postman_environment.json: 53274222-c6a1bfbe-b4b3-4ade-9173-382b90df9c29
+    ../postman/environments/staging.postman_environment.json: 53274222-8699d49d-9ddd-4297-8b63-0d7b3221267a
+  specs:
+    ../open-api-specs/demo-service-activation-api-openapi.yaml: 2bedc149-3a21-4126-a196-f8b3bf8706c9
