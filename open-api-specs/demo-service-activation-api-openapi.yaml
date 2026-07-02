@@ -263,6 +263,8 @@ paths:
           $ref: '#/components/responses/ActivationNotFound'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'          
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -668,6 +670,23 @@ components:
                 message: "Authentication token is required"
                 code: "AUTHENTICATION_ERROR"
                 timestamp: "2026-06-01T10:00:00Z"
+    Forbidden:
+      description: Forbidden - caller does not have permission to access this activation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            forbidden:
+              summary: Access denied to activation
+              value:
+                error: "ACCESS_DENIED"
+                message: "You do not have permission to access this activation"
+                details:
+                  activationId: "act_q1w2e3r4"
+                  requiredScope: "activations:read"
+                code: "AUTHORIZATION_ERROR"
+                timestamp: "2026-06-01T10:00:00Z"                
     ActivationNotFound:
       description: Activation not found
       content:
