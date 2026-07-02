@@ -28,9 +28,9 @@ jobs:
           domain: Activation
           domain-code: ACT
           spec-path: open-api-specs/demo-service-activation-api-openapi.yaml
-          env-runtime-urls-json: '{"prod":"https://api.demo.example.com/activation/v1","staging":"https://api-staging.demo.example.com/activation/v1"}'
+          env-runtime-urls-json: '{"prod":"https://api.demo.example.com/activation/v1","staging":"https://api-staging.demo.example.com/activation/v1","dev":"https://api-staging.dev.example.com/activation/v1"}'
           # ----------------------------------------
-          environments-json: '["prod","staging"]'
+          environments-json: '["prod","staging","dev"]'
           postman-api-key: ${{ secrets.POSTMAN_API_KEY }}
           postman-access-token: ${{ secrets.POSTMAN_ACCESS_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
