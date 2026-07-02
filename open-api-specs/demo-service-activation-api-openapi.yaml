@@ -25,6 +25,8 @@ servers:
     description: Production environment
   - url: https://api-staging.demo.example.com/activation/v1
     description: Staging environment
+  - url: https://api-preprod.demo.example.com/activation/v1
+    description: ProProd environment
 
 tags:
   - name: Activations
