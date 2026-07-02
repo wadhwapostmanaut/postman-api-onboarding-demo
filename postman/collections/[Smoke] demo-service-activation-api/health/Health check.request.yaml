@@ -23,19 +23,3 @@ scripts:
       - '    }'
       - '});'
     language: text/javascript
-examples:
-  - response:
-      statusCode: 200
-      statusText: OK
-      body:
-        type: json
-        content: |-
-          {
-            "status": "healthy",
-            "timestamp": "2026-06-01T10:00:00Z",
-            "version": "1.0.0"
-          }
-      headers:
-        - key: Content-Type
-          value: application/json
-    name: Service is healthy

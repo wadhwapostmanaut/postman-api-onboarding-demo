@@ -12,7 +12,7 @@ pathVariables:
 scripts:
   - type: afterResponse
     code:
-      - var contract = JSON.parse("{\"method\":\"GET\",\"path\":\"/activations/{activationId}\",\"responses\":{\"200\":{\"content\":{\"application/json\":{\"schema\":{\"allOf\":[{\"type\":\"object\",\"properties\":{\"activationId\":{\"type\":\"string\",\"pattern\":\"^act_[a-zA-Z0-9]+$\"},\"customerId\":{\"type\":\"string\",\"pattern\":\"^cust_[a-zA-Z0-9]+$\"},\"serviceType\":{\"type\":\"string\",\"enum\":[\"mobile\",\"broadband\",\"voice\"]},\"planCode\":{\"type\":\"string\"},\"status\":{\"type\":\"string\",\"enum\":[\"pending\",\"provisioning\",\"completed\",\"failed\",\"cancelled\"]},\"requestedAt\":{\"type\":\"string\",\"format\":\"date-time\"},\"updatedAt\":{\"type\":\"string\",\"format\":\"date-time\"},\"completedAt\":{\"type\":\"string\",\"format\":\"date-time\"},\"cancelledAt\":{\"type\":\"string\",\"format\":\"date-time\"},\"failedAt\":{\"type\":\"string\",\"format\":\"date-time\"},\"estimatedCompletionTime\":{\"type\":\"string\",\"format\":\"date-time\"},\"cancellationReason\":{\"type\":\"string\"},\"failureReason\":{\"type\":\"string\"},\"failureCode\":{\"type\":\"string\"},\"serviceId\":{\"type\":\"string\",\"pattern\":\"^svc_[a-zA-Z0-9]+$\"}}},{\"type\":\"object\",\"properties\":{\"statusHistory\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"status\":{\"type\":\"string\",\"enum\":[\"pending\",\"provisioning\",\"completed\",\"failed\",\"cancelled\"]},\"timestamp\":{\"type\":\"string\",\"format\":\"date-time\"},\"message\":{\"type\":\"string\"}}}}}}],\"$schema\":\"http://json-schema.org/draft-07/schema#\"}}},\"hasBody\":true,\"headers\":[]},\"401\":{\"content\":{\"application/json\":{\"schema\":{\"type\":\"object\",\"required\":[\"error\",\"message\",\"code\",\"timestamp\"],\"properties\":{\"error\":{\"type\":\"string\"},\"message\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"additionalProperties\":true},\"code\":{\"type\":\"string\",\"enum\":[\"VALIDATION_ERROR\",\"AUTHENTICATION_ERROR\",\"RESOURCE_NOT_FOUND\",\"CONFLICT\",\"SERVER_ERROR\"]},\"timestamp\":{\"type\":\"string\",\"format\":\"date-time\"}},\"$schema\":\"http://json-schema.org/draft-07/schema#\"}}},\"hasBody\":true,\"headers\":[]},\"404\":{\"content\":{\"application/json\":{\"schema\":{\"type\":\"object\",\"required\":[\"error\",\"message\",\"code\",\"timestamp\"],\"properties\":{\"error\":{\"type\":\"string\"},\"message\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"additionalProperties\":true},\"code\":{\"type\":\"string\",\"enum\":[\"VALIDATION_ERROR\",\"AUTHENTICATION_ERROR\",\"RESOURCE_NOT_FOUND\",\"CONFLICT\",\"SERVER_ERROR\"]},\"timestamp\":{\"type\":\"string\",\"format\":\"date-time\"}},\"$schema\":\"http://json-schema.org/draft-07/schema#\"}}},\"hasBody\":true,\"headers\":[]},\"500\":{\"content\":{\"application/json\":{\"schema\":{\"type\":\"object\",\"required\":[\"error\",\"message\",\"code\",\"timestamp\"],\"properties\":{\"error\":{\"type\":\"string\"},\"message\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"additionalProperties\":true},\"code\":{\"type\":\"string\",\"enum\":[\"VALIDATION_ERROR\",\"AUTHENTICATION_ERROR\",\"RESOURCE_NOT_FOUND\",\"CONFLICT\",\"SERVER_ERROR\"]},\"timestamp\":{\"type\":\"string\",\"format\":\"date-time\"}},\"$schema\":\"http://json-schema.org/draft-07/schema#\"}}},\"hasBody\":true,\"headers\":[]}},\"security\":[[{\"scheme\":\"JWT\",\"kind\":\"http:bearer\",\"checkable\":true,\"prefix\":\"Bearer \"}]],\"parameters\":[{\"in\":\"path\",\"name\":\"activationId\",\"required\":true,\"schema\":{\"type\":\"string\",\"pattern\":\"^act_[a-zA-Z0-9]+$\",\"$schema\":\"http://json-schema.org/draft-07/schema#\"}}]}");
+      - var contract = JSON.parse("{\"method\":\"GET\",\"path\":\"/activations/{activationId}\",\"responses\":{\"200\":{\"content\":{\"application/json\":{\"schema\":{\"allOf\":[{\"type\":\"object\",\"properties\":{\"activationId\":{\"type\":\"string\",\"pattern\":\"^act_[a-zA-Z0-9]+$\"},\"customerId\":{\"type\":\"string\",\"pattern\":\"^cust_[a-zA-Z0-9]+$\"},\"serviceType\":{\"type\":\"string\",\"enum\":[\"mobile\",\"broadband\",\"voice\"]},\"planCode\":{\"type\":\"string\"},\"status\":{\"type\":\"string\",\"enum\":[\"pending\",\"provisioning\",\"completed\",\"failed\",\"cancelled\"]},\"requestedAt\":{\"type\":\"string\",\"format\":\"date-time\"},\"updatedAt\":{\"type\":\"string\",\"format\":\"date-time\"},\"completedAt\":{\"type\":\"string\",\"format\":\"date-time\"},\"cancelledAt\":{\"type\":\"string\",\"format\":\"date-time\"},\"failedAt\":{\"type\":\"string\",\"format\":\"date-time\"},\"estimatedCompletionTime\":{\"type\":\"string\",\"format\":\"date-time\"},\"cancellationReason\":{\"type\":\"string\"},\"failureReason\":{\"type\":\"string\"},\"failureCode\":{\"type\":\"string\"},\"serviceId\":{\"type\":\"string\",\"pattern\":\"^svc_[a-zA-Z0-9]+$\"}}},{\"type\":\"object\",\"properties\":{\"statusHistory\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"status\":{\"type\":\"string\",\"enum\":[\"pending\",\"provisioning\",\"completed\",\"failed\",\"cancelled\"]},\"timestamp\":{\"type\":\"string\",\"format\":\"date-time\"},\"message\":{\"type\":\"string\"}}}}}}],\"$schema\":\"http://json-schema.org/draft-07/schema#\"}}},\"hasBody\":true,\"headers\":[]},\"401\":{\"content\":{\"application/json\":{\"schema\":{\"type\":\"object\",\"required\":[\"error\",\"message\",\"code\",\"timestamp\"],\"properties\":{\"error\":{\"type\":\"string\"},\"message\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"additionalProperties\":true},\"code\":{\"type\":\"string\",\"enum\":[\"VALIDATION_ERROR\",\"AUTHENTICATION_ERROR\",\"RESOURCE_NOT_FOUND\",\"CONFLICT\",\"SERVER_ERROR\"]},\"timestamp\":{\"type\":\"string\",\"format\":\"date-time\"}},\"$schema\":\"http://json-schema.org/draft-07/schema#\"}}},\"hasBody\":true,\"headers\":[]},\"403\":{\"content\":{\"application/json\":{\"schema\":{\"type\":\"object\",\"required\":[\"error\",\"message\",\"code\",\"timestamp\"],\"properties\":{\"error\":{\"type\":\"string\"},\"message\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"additionalProperties\":true},\"code\":{\"type\":\"string\",\"enum\":[\"VALIDATION_ERROR\",\"AUTHENTICATION_ERROR\",\"RESOURCE_NOT_FOUND\",\"CONFLICT\",\"SERVER_ERROR\"]},\"timestamp\":{\"type\":\"string\",\"format\":\"date-time\"}},\"$schema\":\"http://json-schema.org/draft-07/schema#\"}}},\"hasBody\":true,\"headers\":[]},\"404\":{\"content\":{\"application/json\":{\"schema\":{\"type\":\"object\",\"required\":[\"error\",\"message\",\"code\",\"timestamp\"],\"properties\":{\"error\":{\"type\":\"string\"},\"message\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"additionalProperties\":true},\"code\":{\"type\":\"string\",\"enum\":[\"VALIDATION_ERROR\",\"AUTHENTICATION_ERROR\",\"RESOURCE_NOT_FOUND\",\"CONFLICT\",\"SERVER_ERROR\"]},\"timestamp\":{\"type\":\"string\",\"format\":\"date-time\"}},\"$schema\":\"http://json-schema.org/draft-07/schema#\"}}},\"hasBody\":true,\"headers\":[]},\"500\":{\"content\":{\"application/json\":{\"schema\":{\"type\":\"object\",\"required\":[\"error\",\"message\",\"code\",\"timestamp\"],\"properties\":{\"error\":{\"type\":\"string\"},\"message\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"additionalProperties\":true},\"code\":{\"type\":\"string\",\"enum\":[\"VALIDATION_ERROR\",\"AUTHENTICATION_ERROR\",\"RESOURCE_NOT_FOUND\",\"CONFLICT\",\"SERVER_ERROR\"]},\"timestamp\":{\"type\":\"string\",\"format\":\"date-time\"}},\"$schema\":\"http://json-schema.org/draft-07/schema#\"}}},\"hasBody\":true,\"headers\":[]}},\"security\":[[{\"scheme\":\"JWT\",\"kind\":\"http:bearer\",\"checkable\":true,\"prefix\":\"Bearer \"}]],\"parameters\":[{\"in\":\"path\",\"name\":\"activationId\",\"required\":true,\"schema\":{\"type\":\"string\",\"pattern\":\"^act_[a-zA-Z0-9]+$\",\"$schema\":\"http://json-schema.org/draft-07/schema#\"}}]}");
       - var validators = {};
       - var paramValidators = {};
       - |-
@@ -353,6 +353,118 @@ scripts:
       - validators["401"] = validators["401"] || {};
       - |-
         validators["401"]["application/json"] = (function() {
+        'use strict'
+        const hasOwn = Function.prototype.call.bind(Object.prototype.hasOwnProperty);
+        const format0 = (input) => {
+                if (input.length > 10 + 1 + 9 + 12 + 6) return false;
+                const full = /^\d\d\d\d-(?:0[1-9]|1[0-2])-(?:[0-2]\d|3[01])[t\s](?:2[0-3]|[0-1]\d):[0-5]\d:(?:[0-5]\d|60)(?:\.\d+)?(?:z|[+-](?:2[0-3]|[0-1]\d)(?::?[0-5]\d)?)$/i;
+                const feb = input[5] === "0" && input[6] === "2";
+                if (feb && input[8] === "3" || !full.test(input)) return false;
+                if (input[17] === "6") {
+                  const p = input.slice(11).match(/([0-9.]+|[^0-9.])/g);
+                  let hm = Number(p[0]) * 60 + Number(p[2]);
+                  if (p[5] === "+") hm += 24 * 60 - Number(p[6] || 0) * 60 - Number(p[8] || 0);
+                  else if (p[5] === "-") hm += Number(p[6] || 0) * 60 + Number(p[8] || 0);
+                  if (hm % (24 * 60) !== 23 * 60 + 59) return false;
+                }
+                if (feb) {
+                  if (/^\d\d\d\d-02-(?:[012][1-8]|[12]0|[01]9)/.test(input)) return true;
+                  const matches = input.match(/^(\d\d\d\d)-02-29/);
+                  if (!matches) return false;
+                  const year = matches[1] | 0;
+                  return year % 16 === 0 || year % 4 === 0 && year % 25 !== 0;
+                }
+                if (input[8] === "3" && input[9] === "1") return /^\d\d\d\d-(?:0[13578]|1[02])-31/.test(input);
+                return /^\d\d\d\d-(?:0[13-9]|1[012])-(?:[012][1-9]|[123]0)/.test(input);
+              };
+        const ref0 = function validate(data) {
+          validate.errors = null
+          let errorCount = 0
+          if (!(typeof data === "object" && data && !Array.isArray(data))) {
+            if (validate.errors === null) validate.errors = []
+            validate.errors.push({ keywordLocation: "#/type", instanceLocation: "#" })
+            errorCount++
+          }
+          else {
+            if (!(data.error !== undefined && hasOwn(data, "error"))) {
+              if (validate.errors === null) validate.errors = []
+              validate.errors.push({ keywordLocation: "#/required", instanceLocation: "#/error" })
+              errorCount++
+            }
+            if (!(data.message !== undefined && hasOwn(data, "message"))) {
+              if (validate.errors === null) validate.errors = []
+              validate.errors.push({ keywordLocation: "#/required", instanceLocation: "#/message" })
+              errorCount++
+            }
+            if (!(data.code !== undefined && hasOwn(data, "code"))) {
+              if (validate.errors === null) validate.errors = []
+              validate.errors.push({ keywordLocation: "#/required", instanceLocation: "#/code" })
+              errorCount++
+            }
+            if (!(data.timestamp !== undefined && hasOwn(data, "timestamp"))) {
+              if (validate.errors === null) validate.errors = []
+              validate.errors.push({ keywordLocation: "#/required", instanceLocation: "#/timestamp" })
+              errorCount++
+            }
+            if (data.error !== undefined && hasOwn(data, "error")) {
+              if (!(typeof data.error === "string")) {
+                if (validate.errors === null) validate.errors = []
+                validate.errors.push({ keywordLocation: "#/properties/error/type", instanceLocation: "#/error" })
+                errorCount++
+              }
+            }
+            if (data.message !== undefined && hasOwn(data, "message")) {
+              if (!(typeof data.message === "string")) {
+                if (validate.errors === null) validate.errors = []
+                validate.errors.push({ keywordLocation: "#/properties/message/type", instanceLocation: "#/message" })
+                errorCount++
+              }
+            }
+            if (data.details !== undefined && hasOwn(data, "details")) {
+              if (!(typeof data.details === "object" && data.details && !Array.isArray(data.details))) {
+                if (validate.errors === null) validate.errors = []
+                validate.errors.push({ keywordLocation: "#/properties/details/type", instanceLocation: "#/details" })
+                errorCount++
+              }
+            }
+            if (data.code !== undefined && hasOwn(data, "code")) {
+              if (!(typeof data.code === "string")) {
+                if (validate.errors === null) validate.errors = []
+                validate.errors.push({ keywordLocation: "#/properties/code/type", instanceLocation: "#/code" })
+                errorCount++
+              }
+              else {
+                if (!(data.code === "VALIDATION_ERROR" || data.code === "AUTHENTICATION_ERROR" || data.code === "RESOURCE_NOT_FOUND" || data.code === "CONFLICT" || data.code === "SERVER_ERROR")) {
+                  if (validate.errors === null) validate.errors = []
+                  validate.errors.push({ keywordLocation: "#/properties/code/enum", instanceLocation: "#/code" })
+                  errorCount++
+                }
+              }
+            }
+            if (data.timestamp !== undefined && hasOwn(data, "timestamp")) {
+              if (!(typeof data.timestamp === "string")) {
+                if (validate.errors === null) validate.errors = []
+                validate.errors.push({ keywordLocation: "#/properties/timestamp/type", instanceLocation: "#/timestamp" })
+                errorCount++
+              }
+              else {
+                const prev0 = errorCount
+                if (errorCount === prev0) {
+                  if (!format0(data.timestamp)) {
+                    if (validate.errors === null) validate.errors = []
+                    validate.errors.push({ keywordLocation: "#/properties/timestamp/format", instanceLocation: "#/timestamp" })
+                    errorCount++
+                  }
+                }
+              }
+            }
+          }
+          return errorCount === 0
+        };
+        return ref0})();;
+      - validators["403"] = validators["403"] || {};
+      - |-
+        validators["403"]["application/json"] = (function() {
         'use strict'
         const hasOwn = Function.prototype.call.bind(Object.prototype.hasOwnProperty);
         const format0 = (input) => {
