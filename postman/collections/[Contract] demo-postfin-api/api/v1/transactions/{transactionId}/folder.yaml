@@ -1,0 +1,4 @@
+type: folder
+name: '{transactionId}'
+items:
+  - ref: ./Get transaction by ID.request.yaml

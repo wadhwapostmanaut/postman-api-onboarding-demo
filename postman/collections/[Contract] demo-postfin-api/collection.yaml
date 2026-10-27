@@ -1,0 +1,31 @@
+$schema: https://schema.postman.com/json/draft-2020-12/collection/v3.0.0/
+type: collection
+name: '[Contract] demo-postfin-api'
+description: |
+  The PostFinanceCo API makes it easy to manage transaction and account data. 
+
+  ## Features
+  - **Account Management**: Create and read bank accounts
+  - **Transaction Processing**: Deposit to or withdraw funds from accounts
+  - **Multiple Currencies**: Support for POST_COINS, POST_GOLD, and POST_BUCKS
+  - **API Key Authentication**: Secure endpoints with API key validation
+  - **Rate Limiting**: 300 requests per minute per API key
+id: 3133730b-e0cd-4d6c-95f4-92eb2d66c5cb
+auth:
+  type: apikey
+  credentials:
+    - key: key
+      value: x-api-key
+      type: string
+    - key: value
+      value: '{{apiKey}}'
+      type: string
+    - key: in
+      value: header
+      type: string
+variables:
+  - key: baseUrl
+    value: https://api.demo.example.com/activation/v1
+items:
+  - ref: ./api/folder.yaml
+  - ref: ./00 - Resolve Secrets.request.yaml

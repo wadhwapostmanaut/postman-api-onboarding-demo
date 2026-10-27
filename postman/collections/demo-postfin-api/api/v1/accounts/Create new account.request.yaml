@@ -1,0 +1,121 @@
+type: http
+name: Create new account
+url: '{{baseUrl}}/api/v1/accounts'
+method: POST
+headers:
+  - key: Content-Type
+    value: application/json
+  - key: Accept
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "owner": "Nora Newman",
+      "balance": 500,
+      "currency": "POST_GOLD"
+    }
+examples:
+  - response:
+      statusCode: 201
+      statusText: Created
+      body:
+        type: json
+        content: |-
+          {
+            "account": {
+              "accountId": "123"
+            }
+          }
+      headers:
+        - key: Content-Type
+          value: application/json
+        - key: X-RateLimit-Limit
+          value: '300'
+          description: The maximum number of requests permitted per minute
+          disabled: false
+        - key: X-RateLimit-Remaining
+          value: '300'
+          description: The number of requests remaining in the current rate limit window
+          disabled: false
+        - key: X-RateLimit-Reset
+          value: '300'
+          description: The time at which the current rate limit window resets (UTC epoch seconds)
+          disabled: false
+    name: Account created successfully
+  - response:
+      statusCode: 400
+      statusText: Bad Request
+      body:
+        type: json
+        content: |-
+          {
+            "error": {
+              "name": "validationError",
+              "message": "Owner name is required and must be a string"
+            }
+          }
+      headers:
+        - key: Content-Type
+          value: application/json
+    name: Request validation failed
+  - response:
+      statusCode: 401
+      statusText: Unauthorized
+      body:
+        type: json
+        content: |-
+          {
+            "error": {
+              "name": "authenticationError",
+              "message": "API key is required. Please provide an API key in the x-api-key header."
+            }
+          }
+      headers:
+        - key: Content-Type
+          value: application/json
+    name: Authentication required or API key invalid
+  - response:
+      statusCode: 429
+      statusText: Too Many Requests
+      body:
+        type: json
+        content: |-
+          {
+            "error": {
+              "name": "rateLimitExceeded",
+              "message": "Too many requests. Maximum 300 requests per minute allowed."
+            }
+          }
+      headers:
+        - key: Content-Type
+          value: application/json
+        - key: X-RateLimit-Limit
+          value: '300'
+          description: The maximum number of requests permitted per minute
+          disabled: false
+        - key: X-RateLimit-Remaining
+          value: '300'
+          description: The number of requests remaining in the current rate limit window
+          disabled: false
+        - key: X-RateLimit-Reset
+          value: '300'
+          description: The time at which the current rate limit window resets (UTC epoch seconds)
+          disabled: false
+    name: Too many requests - rate limit exceeded
+  - response:
+      statusCode: 500
+      statusText: Internal Server Error
+      body:
+        type: json
+        content: |-
+          {
+            "error": {
+              "name": "serverError",
+              "message": "An unexpected error occurred"
+            }
+          }
+      headers:
+        - key: Content-Type
+          value: application/json
+    name: Internal server error

@@ -1,0 +1,4 @@
+type: folder
+name: api
+items:
+  - ref: ./v1/folder.yaml

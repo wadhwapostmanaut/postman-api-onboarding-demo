@@ -1,0 +1,6 @@
+type: folder
+name: transactions
+items:
+  - ref: ./{transactionId}/folder.yaml
+  - ref: ./List all transactions.request.yaml
+  - ref: ./Create new transaction.request.yaml

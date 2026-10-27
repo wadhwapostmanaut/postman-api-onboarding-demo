@@ -1,0 +1,4 @@
+type: folder
+name: auth
+items:
+  - ref: ./Generate API key.request.yaml

@@ -1,0 +1,6 @@
+type: folder
+name: accounts
+items:
+  - ref: ./{accountId}/folder.yaml
+  - ref: ./Create new account.request.yaml
+  - ref: ./List all accounts.request.yaml

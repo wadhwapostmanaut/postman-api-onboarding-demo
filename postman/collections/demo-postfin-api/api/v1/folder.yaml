@@ -1,0 +1,6 @@
+type: folder
+name: v1
+items:
+  - ref: ./auth/folder.yaml
+  - ref: ./accounts/folder.yaml
+  - ref: ./transactions/folder.yaml
