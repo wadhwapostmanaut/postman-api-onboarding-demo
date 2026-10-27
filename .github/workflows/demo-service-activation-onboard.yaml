@@ -24,9 +24,9 @@ jobs:
           # ----------------------------------------
           # CHANGE THESE 5 LINES FOR EACH NEW SERVICE
           # ----------------------------------------
-          project-name: demo-service-activation-api
+          project-name: demo-postfin-api
           domain: Activation
-          domain-code: ACT
+          domain-code: AW
           spec-path: open-api-specs/demo-service-activation-api-openapi.yaml
           env-runtime-urls-json: '{"prod":"https://api.demo.example.com/activation/v1","staging":"https://api-staging.demo.example.com/activation/v1"}'
           # ----------------------------------------
