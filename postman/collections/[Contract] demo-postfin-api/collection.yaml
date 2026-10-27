@@ -10,7 +10,7 @@ description: |
   - **Multiple Currencies**: Support for POST_COINS, POST_GOLD, and POST_BUCKS
   - **API Key Authentication**: Secure endpoints with API key validation
   - **Rate Limiting**: 300 requests per minute per API key
-id: 3133730b-e0cd-4d6c-95f4-92eb2d66c5cb
+id: 0c8c71d9-7aa5-4354-a89f-cda28d891ccc
 auth:
   type: apikey
   credentials:
