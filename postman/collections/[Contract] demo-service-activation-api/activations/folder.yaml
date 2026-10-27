@@ -1,6 +1,0 @@
-type: folder
-name: activations
-items:
-  - ref: ./{activationId}/folder.yaml
-  - ref: ./Request a service activation.request.yaml
-  - ref: ./List activations.request.yaml
