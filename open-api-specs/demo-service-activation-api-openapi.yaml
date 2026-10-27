@@ -17,8 +17,6 @@ info:
     url: https://opensource.org/licenses/ISC
 
 servers:
-  - url: http://localhost:8000
-    description: Local development server
   - url: https://api.demo.example.com/activation/v1
     description: Production environment
   - url: https://api-staging.demo.example.com/activation/v1
