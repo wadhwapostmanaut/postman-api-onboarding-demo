@@ -1,719 +1,815 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
-  title: Demo Service Activation API
+  title: PostFinanceCo API
+  version: 1.0.1
   description: |
-    Demo service representing a service activation system. Handles activation
-    of new services, such as mobile plans and broadband connections, against
-    existing customer accounts, and tracks activation progress.
-
-    Customer accounts are owned by the Demo Customer API. Successful
-    activations result in billing line items raised through the Demo
-    Billing API.
-
-    This is a demonstration API used to showcase automated Postman onboarding.
-    It does not connect to any real systems.
-
-    **Authentication:**
-    - Internal services: JWT token (Bearer token)
-  version: 1.0.0
-  contact:
-    name: Platform Engineering (Demo)
-    email: platform-demo@example.com
+    The PostFinanceCo API makes it easy to manage transaction and account data. 
+    
+    ## Features
+    - **Account Management**: Create and read bank accounts
+    - **Transaction Processing**: Deposit to or withdraw funds from accounts
+    - **Multiple Currencies**: Support for POST_COINS, POST_GOLD, and POST_BUCKS
+    - **API Key Authentication**: Secure endpoints with API key validation
+    - **Rate Limiting**: 300 requests per minute per API key
+    
+  license:
+    name: ISC
+    url: https://opensource.org/licenses/ISC
 
 servers:
+  - url: http://localhost:8000
+    description: Local development server
   - url: https://api.demo.example.com/activation/v1
     description: Production environment
   - url: https://api-staging.demo.example.com/activation/v1
     description: Staging environment
 
 tags:
-  - name: Activations
-    description: Operations for requesting and managing service activations
-  - name: Activation Status
-    description: Operations for tracking activation progress
-  - name: Health
-    description: Service health checks
+  - name: Admin
+    description: Administrative operations including API key management
+  - name: Accounts
+    description: |
+      Account management operations. An account at the PostFinanceCo allows you to store funds.
+      Use these endpoints to list and create accounts.
+  - name: Transactions
+    description: |
+      Transaction operations. A transaction records money moving in or out of an account.
 
 security:
-  - JWT: []
+  - ApiKeyAuth: []
 
 paths:
-  /activations:
+  /api/v1/auth:
+    get:
+      tags:
+        - Admin
+      summary: Generate API key
+      description: |
+        Generates a new API key for accessing the PostFinanceCo APIs.
+      operationId: generateApiKey
+      security: 
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Successful API key generation
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyResponse'
+              example:
+                apiKey: "123456789"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/accounts:
     post:
       tags:
-        - Activations
-      summary: Request a service activation
+        - Accounts
+      summary: Create new account
       description: |
-        Requests activation of a new service for an existing customer.
-        The customer ID must refer to an active customer in the Demo
-        Customer API. The activation starts in 'pending' status and moves
-        through 'provisioning' to 'completed' or 'failed'.
-
-        On completion, the service appears against the customer in the
-        Demo Customer API and billing begins through the Demo Billing API.
-      operationId: createActivation
+        Creates a new account at PostFinanceCo. The account will be assigned a unique ID.
+        The currency cannot be changed once the account is created.
+      operationId: createAccount
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateActivationRequest'
+              $ref: '#/components/schemas/CreateAccountRequest'
             examples:
-              mobile_activation:
-                summary: Mobile plan activation
+              withBalance:
+                summary: Create account with initial balance
                 value:
-                  customerId: "cust_a1b2c3d4"
-                  serviceType: "mobile"
-                  planCode: "DEMO-MOB-50GB"
-                  simSerial: "8961000000000000001"
-              broadband_activation:
-                summary: Broadband activation
+                  owner: "Nora Newman"
+                  balance: 500
+                  currency: "POST_GOLD"
+              withoutBalance:
+                summary: Create account with zero balance
                 value:
-                  customerId: "cust_a1b2c3d4"
-                  serviceType: "broadband"
-                  planCode: "DEMO-NBN-100"
-                  installationAddress:
-                    line1: "1 Demo Street"
-                    suburb: "Sydney"
-                    state: "NSW"
-                    postcode: "2000"
-                    country: "AU"
+                  owner: "Nora Newman"
+                  currency: "POST_GOLD"
       responses:
         '201':
-          description: Activation request created successfully
+          description: Account created successfully
           headers:
-            Location:
-              description: URI of the created activation resource
-              schema:
-                type: string
-                format: uri
-              example: "/activations/act_q1w2e3r4"
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ActivationResponse'
-              examples:
-                created:
-                  summary: Activation request accepted
-                  value:
-                    activationId: "act_q1w2e3r4"
-                    customerId: "cust_a1b2c3d4"
-                    serviceType: "mobile"
-                    planCode: "DEMO-MOB-50GB"
-                    status: "pending"
-                    requestedAt: "2026-06-01T10:00:00Z"
-                    updatedAt: "2026-06-01T10:00:00Z"
-                    estimatedCompletionTime: "2026-06-01T10:15:00Z"
+                $ref: '#/components/schemas/CreateAccountResponse'
+              example:
+                account:
+                  accountId: "123"
         '400':
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '404':
-          description: Customer not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                customer_not_found:
-                  summary: Customer does not exist
-                  value:
-                    error: "CUSTOMER_NOT_FOUND"
-                    message: "The specified customer was not found in the customer service"
-                    details:
-                      customerId: "cust_invalid01"
-                    code: "RESOURCE_NOT_FOUND"
-                    timestamp: "2026-06-01T10:00:00Z"
-        '409':
-          description: Conflict - duplicate activation in progress
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                duplicate_activation:
-                  summary: Activation already in progress
-                  value:
-                    error: "ACTIVATION_IN_PROGRESS"
-                    message: "An activation for this plan is already in progress for this customer"
-                    details:
-                      customerId: "cust_a1b2c3d4"
-                      existingActivationId: "act_existing01"
-                    code: "CONFLICT"
-                    timestamp: "2026-06-01T10:00:00Z"
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
     get:
       tags:
-        - Activation Status
-      summary: List activations
+        - Accounts
+      summary: List all accounts
       description: |
-        Retrieves a paginated list of activation requests. Supports filtering
-        by customer ID, status, and service type. Results are sorted by
-        request date in descending order.
-      operationId: listActivations
+        Retrieves a list of all accounts at PostFinanceCo. 
+        Optionally filter by owner name.
+      operationId: listAccounts
       parameters:
-        - $ref: '#/components/parameters/CustomerIdFilter'
-        - $ref: '#/components/parameters/StatusFilter'
-        - $ref: '#/components/parameters/ServiceTypeFilter'
-        - $ref: '#/components/parameters/PageNumber'
-        - $ref: '#/components/parameters/PageSize'
+        - name: owner
+          in: query
+          description: Filter accounts by owner's full name
+          required: false
+          schema:
+            $ref: '#/components/schemas/OwnerNameFilter'
+          example: "Nova Newman"
       responses:
         '200':
-          description: Successful response with activation list
+          description: Successful response with list of accounts
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ActivationListResponse'
+                $ref: '#/components/schemas/AccountListResponse'
               examples:
-                activations_found:
-                  summary: Activations found
+                withResults:
+                  summary: Accounts found
                   value:
-                    activations:
-                      - activationId: "act_q1w2e3r4"
-                        customerId: "cust_a1b2c3d4"
-                        serviceType: "mobile"
-                        planCode: "DEMO-MOB-50GB"
-                        status: "completed"
-                        requestedAt: "2026-06-01T10:00:00Z"
-                        updatedAt: "2026-06-01T10:12:00Z"
-                        completedAt: "2026-06-01T10:12:00Z"
-                        serviceId: "svc_m0b1l3"
-                    pagination:
-                      page: 1
-                      pageSize: 20
-                      totalPages: 1
-                      totalItems: 1
-                      hasNext: false
-                      hasPrevious: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                    accounts:
+                      - accountId: "123"
+                        owner: "Nova Newman"
+                        createdAt: "2023-04-10"
+                        balance: 10000
+                        currency: "POST_COINS"
+                      - accountId: "124"
+                        owner: "Gary Galaxy"
+                        createdAt: "2023-04-10"
+                        balance: 237
+                        currency: "POST_COINS"
+                noResults:
+                  summary: No accounts found
+                  value:
+                    accounts: []
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
         '500':
           $ref: '#/components/responses/InternalServerError'
+    
 
-  /activations/{activationId}:
+
+  /api/v1/accounts/{accountId}:
     get:
       tags:
-        - Activation Status
-      summary: Get activation details
+        - Accounts
+      summary: Get account by ID
       description: |
-        Retrieves an activation request by its ID, including its status
-        history. Completed activations include the resulting service ID,
-        which can be looked up in the Demo Customer API.
-      operationId: getActivation
+        Retrieves detailed information about a specific account by its ID.
+      operationId: getAccount
       parameters:
-        - $ref: '#/components/parameters/ActivationId'
+        - $ref: '#/components/parameters/AccountId'
       responses:
         '200':
-          description: Activation details retrieved successfully
+          description: Account details retrieved successfully
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ActivationDetailResponse'
-              examples:
-                completed_activation:
-                  summary: Completed activation
-                  value:
-                    activationId: "act_q1w2e3r4"
-                    customerId: "cust_a1b2c3d4"
-                    serviceType: "mobile"
-                    planCode: "DEMO-MOB-50GB"
-                    status: "completed"
-                    requestedAt: "2026-06-01T10:00:00Z"
-                    updatedAt: "2026-06-01T10:12:00Z"
-                    completedAt: "2026-06-01T10:12:00Z"
-                    serviceId: "svc_m0b1l3"
-                    statusHistory:
-                      - status: "pending"
-                        timestamp: "2026-06-01T10:00:00Z"
-                        message: "Activation request received"
-                      - status: "provisioning"
-                        timestamp: "2026-06-01T10:02:00Z"
-                        message: "Network provisioning started"
-                      - status: "completed"
-                        timestamp: "2026-06-01T10:12:00Z"
-                        message: "Service activated"
-                failed_activation:
-                  summary: Failed activation
-                  value:
-                    activationId: "act_failed01"
-                    customerId: "cust_a1b2c3d4"
-                    serviceType: "broadband"
-                    planCode: "DEMO-NBN-100"
-                    status: "failed"
-                    requestedAt: "2026-06-01T09:00:00Z"
-                    updatedAt: "2026-06-01T09:20:00Z"
-                    failedAt: "2026-06-01T09:20:00Z"
-                    failureReason: "Address not serviceable for requested plan"
-                    failureCode: "ADDRESS_NOT_SERVICEABLE"
-                    statusHistory:
-                      - status: "pending"
-                        timestamp: "2026-06-01T09:00:00Z"
-                        message: "Activation request received"
-                      - status: "provisioning"
-                        timestamp: "2026-06-01T09:05:00Z"
-                        message: "Network provisioning started"
-                      - status: "failed"
-                        timestamp: "2026-06-01T09:20:00Z"
-                        message: "Activation failed: Address not serviceable for requested plan"
-        '404':
-          $ref: '#/components/responses/ActivationNotFound'
+                $ref: '#/components/schemas/GetAccountResponse'
+              example:
+                account:
+                  accountId: "123"
+                  owner: "Nova Newman"
+                  createdAt: "2023-04-10"
+                  balance: 10000
+                  currency: "POST_COINS"
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/Forbidden'          
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/AccountNotFound'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /activations/{activationId}/cancel:
+  /api/v1/transactions:
+    get:
+      tags:
+        - Transactions
+      summary: List all transactions
+      description: |
+        Retrieves a list of transactions.
+      operationId: listTransactions
+      parameters:
+        - name: accountId
+          in: query
+          description: Filter transactions by source account ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdSchema'
+          example: "123"
+      responses:
+        '200':
+          description: Successful response with list of transactions
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionListResponse'
+              examples:
+                withResults:
+                  summary: Transactions found
+                  value:
+                    transactions:
+                      - transactionId: "1"
+                        createdAt: "2024-01-10"
+                        amount: 94857902
+                        currency: "POST_GOLD"
+                        accountId: "123"
+                        transactionType: "DEPOSIT"
+                      - transactionId: "2"
+                        createdAt: "2024-01-10"
+                        amount: 94857902
+                        currency: "POST_GOLD"
+                        accountId: "123"
+                        transactionType: "WITHDRAWAL"
+                noResults:
+                  summary: No transactions found
+                  value:
+                    transactions: []
+        '400':
+          $ref: '#/components/responses/TransactionValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
     post:
       tags:
-        - Activations
-      summary: Cancel a pending activation
+        - Transactions
+      summary: Create new transaction
       description: |
-        Cancels an activation that is in 'pending' status. Once provisioning
-        has started, the activation cannot be cancelled.
-      operationId: cancelActivation
-      parameters:
-        - $ref: '#/components/parameters/ActivationId'
+        Creates a new transaction. There are two types of transactions:
+        - **Deposit**: Add money to an account by setting transactionType to "DEPOSIT"
+        - **Withdrawal**: Remove money from an account by setting transactionType to "WITHDRAWAL"
+
+        **Important**: Transactions cannot be edited or deleted once created.
+      operationId: createTransaction
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                reason:
-                  type: string
-                  description: Reason for cancellation
-                  maxLength: 500
-                  example: "Customer changed plan selection"
+              $ref: '#/components/schemas/CreateTransactionRequest'
+            examples:
+              deposit:
+                summary: Deposit to account
+                value:
+                  accountId: "123"
+                  amount: 10000
+                  currency: "POST_GOLD"
+                  transactionType: "DEPOSIT"
+              withdrawal:
+                summary: Withdraw from account
+                value:
+                  accountId: "123"
+                  amount: 10000
+                  currency: "POST_GOLD"
+                  transactionType: "WITHDRAWAL"
       responses:
-        '200':
-          description: Activation cancelled successfully
+        '201':
+          description: Transaction created successfully
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ActivationResponse'
-              examples:
-                cancelled:
-                  summary: Activation cancelled
-                  value:
-                    activationId: "act_q1w2e3r4"
-                    customerId: "cust_a1b2c3d4"
-                    serviceType: "mobile"
-                    planCode: "DEMO-MOB-50GB"
-                    status: "cancelled"
-                    requestedAt: "2026-06-01T10:00:00Z"
-                    updatedAt: "2026-06-01T10:05:00Z"
-                    cancelledAt: "2026-06-01T10:05:00Z"
-                    cancellationReason: "Customer changed plan selection"
+                $ref: '#/components/schemas/CreateTransactionResponse'
+              example:
+                transaction:
+                  transactionId: "1"
         '400':
-          description: Bad request - cannot cancel activation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                cannot_cancel:
-                  summary: Provisioning already started
-                  value:
-                    error: "ACTIVATION_CANNOT_BE_CANCELLED"
-                    message: "Only pending activations can be cancelled"
-                    details:
-                      activationId: "act_q1w2e3r4"
-                      currentStatus: "provisioning"
-                      allowedStatuses: ["pending"]
-                    code: "VALIDATION_ERROR"
-                    timestamp: "2026-06-01T10:05:00Z"
-        '404':
-          $ref: '#/components/responses/ActivationNotFound'
+          $ref: '#/components/responses/TransactionValidationError'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientFunds'
+        '404':
+          $ref: '#/components/responses/AccountNotFound'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /health:
+  /api/v1/transactions/{transactionId}:
     get:
       tags:
-        - Health
-      summary: Health check
-      description: Returns the health status of the activation service.
-      operationId: healthCheck
-      security: []
+        - Transactions
+      summary: Get transaction by ID
+      description: Retrieves detailed information about a specific transaction by its ID.
+      operationId: getTransaction
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
       responses:
         '200':
-          description: Service is healthy
+          description: Transaction details retrieved successfully
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    enum: [healthy, degraded, unhealthy]
-                    example: "healthy"
-                  timestamp:
-                    type: string
-                    format: date-time
-                    example: "2026-06-01T10:00:00Z"
-                  version:
-                    type: string
-                    example: "1.0.0"
-              examples:
-                healthy:
-                  summary: Service healthy
-                  value:
-                    status: "healthy"
-                    timestamp: "2026-06-01T10:00:00Z"
-                    version: "1.0.0"
+                $ref: '#/components/schemas/TransactionResponse'
+              example:
+                transaction:
+                  transactionId: "1"
+                  createdAt: "2024-01-10"
+                  amount: 10000
+                  currency: "POST_COINS"
+                  accountId: "123"
+                  transactionType: "DEPOSIT"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/TransactionNotFound'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
 components:
   securitySchemes:
-    JWT:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
       description: |
-        JWT token authentication for internal services. Tokens must include
-        the 'activations' scope.
-
+        API key for authentication. Include your API key in the `x-api-key` header.
+        Generate a new API key using the `/api/v1/auth` endpoint.
+        
+        Admin operations require the admin credentials.
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: |
+        HTTP Basic authentication. Provide a base64-encoded `username:password`
+        in the `Authorization` header.
+ 
   parameters:
-    ActivationId:
-      name: activationId
+    AccountId:
+      name: accountId
       in: path
       required: true
-      description: Unique identifier for the activation request
+      description: The unique identifier of the account
       schema:
-        type: string
-        pattern: '^act_[a-zA-Z0-9]+$'
-        example: "act_q1w2e3r4"
-    CustomerIdFilter:
-      name: customerId
-      in: query
-      description: Filter activations by customer ID
+        $ref: '#/components/schemas/IdSchema'
+      example: "123"
+    
+    TransactionId:
+      name: transactionId
+      in: path
+      required: true
+      description: The unique identifier of the transaction
       schema:
-        type: string
-        pattern: '^cust_[a-zA-Z0-9]+$'
-        example: "cust_a1b2c3d4"
-    StatusFilter:
-      name: status
-      in: query
-      description: Filter activations by status
+        $ref: '#/components/schemas/IdSchema'
+      example: "1"
+
+  headers:
+    X-RateLimit-Limit:
+      description: The maximum number of requests permitted per minute
       schema:
-        type: string
-        enum: [pending, provisioning, completed, failed, cancelled]
-        example: "pending"
-    ServiceTypeFilter:
-      name: serviceType
-      in: query
-      description: Filter activations by service type
+        $ref: '#/components/schemas/RateLimitInteger'
+    
+    X-RateLimit-Remaining:
+      description: The number of requests remaining in the current rate limit window
       schema:
-        type: string
-        enum: [mobile, broadband, voice]
-        example: "mobile"
-    PageNumber:
-      name: page
-      in: query
-      description: Page number for pagination (1-based)
+        $ref: '#/components/schemas/RateLimitInteger'
+    
+    X-RateLimit-Reset:
+      description: The time at which the current rate limit window resets (UTC epoch seconds)
       schema:
-        type: integer
-        minimum: 1
-        default: 1
-        example: 1
-    PageSize:
-      name: pageSize
-      in: query
-      description: Number of items per page
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 20
-        example: 20
+        $ref: '#/components/schemas/RateLimitInteger'
 
   schemas:
-    CreateActivationRequest:
+    Account:
       type: object
       required:
-        - customerId
-        - serviceType
-        - planCode
+        - accountId
+        - owner
+        - createdAt
+        - balance
+        - currency
       properties:
-        customerId:
+        accountId:
           type: string
-          description: Customer ID from the Demo Customer API
-          pattern: '^cust_[a-zA-Z0-9]+$'
-          example: "cust_a1b2c3d4"
-        serviceType:
+          description: Unique identifier for the account
+          example: "1"
+        owner:
           type: string
-          enum: [mobile, broadband, voice]
-          example: "mobile"
-        planCode:
+          description: Full name of the account owner
+          minLength: 1
+          example: "Nova Newman"
+        createdAt:
           type: string
-          description: Plan code to activate
-          pattern: '^DEMO-[A-Z0-9-]+$'
-          example: "DEMO-MOB-50GB"
-        simSerial:
+          format: date
+          description: Date the account was created (YYYY-MM-DD)
+          example: "2023-04-10"
+        balance:
+          type: number
+          format: double
+          description: Current account balance
+          minimum: 0
+          example: 10000
+        currency:
           type: string
-          description: SIM serial number (mobile activations only)
-          pattern: '^[0-9]{19}$'
-          example: "8961000000000000001"
-        installationAddress:
-          $ref: '#/components/schemas/Address'
-
-    ActivationResponse:
+          description: Currency type for the account
+          enum:
+            - POST_COINS
+            - POST_GOLD
+            - POST_BUCKS
+          example: "POST_COINS"
+    
+    CreateAccountRequest:
       type: object
+      required:
+        - owner
+        - currency
       properties:
-        activationId:
+        owner:
           type: string
-          pattern: '^act_[a-zA-Z0-9]+$'
-          example: "act_q1w2e3r4"
-        customerId:
+          description: Full name of the account owner
+          minLength: 1
+          example: "Nova Newman"
+        balance:
+          type: number
+          format: double
+          description: Initial account balance (defaults to 0 if not provided)
+          minimum: 0
+          default: 0
+          example: 500
+        currency:
           type: string
-          pattern: '^cust_[a-zA-Z0-9]+$'
-          example: "cust_a1b2c3d4"
-        serviceType:
+          description: Currency type for the account (cannot be changed after creation)
+          enum:
+            - POST_COINS
+            - POST_GOLD
+            - POST_BUCKS
+          example: "POST_COINS"
+    
+    Transaction:
+      type: object
+      required:
+        - transactionId
+        - createdAt
+        - amount
+        - currency
+        - accountId
+        - transactionType
+      properties:
+        transactionId:
           type: string
-          enum: [mobile, broadband, voice]
-          example: "mobile"
-        planCode:
+          description: Unique identifier for the transaction
+          example: "1"
+        createdAt:
           type: string
-          example: "DEMO-MOB-50GB"
-        status:
+          format: date
+          description: Date the transaction was created (YYYY-MM-DD)
+          example: "2024-01-10"
+        amount:
+          $ref: '#/components/schemas/AmountDetails'
+        currency:
           type: string
-          enum: [pending, provisioning, completed, failed, cancelled]
-          example: "pending"
-        requestedAt:
+          description: Currency type for the transaction
+          enum:
+            - POST_COINS
+            - POST_GOLD
+            - POST_BUCKS
+          example: "POST_COINS"
+        accountId:
           type: string
-          format: date-time
-          example: "2026-06-01T10:00:00Z"
-        updatedAt:
-          type: string
-          format: date-time
-          example: "2026-06-01T10:00:00Z"
-        completedAt:
-          type: string
-          format: date-time
-          description: Timestamp when the activation completed (if applicable)
-          example: "2026-06-01T10:12:00Z"
-        cancelledAt:
-          type: string
-          format: date-time
-          description: Timestamp when the activation was cancelled (if applicable)
-          example: "2026-06-01T10:05:00Z"
-        failedAt:
-          type: string
-          format: date-time
-          description: Timestamp when the activation failed (if applicable)
-          example: "2026-06-01T09:20:00Z"
-        estimatedCompletionTime:
-          type: string
-          format: date-time
-          description: Estimated completion time (for pending or provisioning activations)
-          example: "2026-06-01T10:15:00Z"
-        cancellationReason:
-          type: string
-          description: Reason for cancellation (if applicable)
-          example: "Customer changed plan selection"
-        failureReason:
-          type: string
-          description: Reason for failure (if applicable)
-          example: "Address not serviceable for requested plan"
-        failureCode:
-          type: string
-          description: Error code for failure (if applicable)
-          example: "ADDRESS_NOT_SERVICEABLE"
-        serviceId:
-          type: string
-          description: |
-            Service ID created on completion. This ID appears against the
-            customer in the Demo Customer API.
-          pattern: '^svc_[a-zA-Z0-9]+$'
-          example: "svc_m0b1l3"
+          description: Account ID
+          example: "1"
+        transactionType:
+          $ref: '#/components/schemas/TransactionType'
 
-    ActivationDetailResponse:
-      allOf:
-        - $ref: '#/components/schemas/ActivationResponse'
-        - type: object
+    CreateTransactionRequest:
+      type: object
+      required:
+        - accountId
+        - amount
+        - currency
+        - transactionType
+      properties:
+        accountId:
+          type: string
+          description: Account ID
+          example: "123"
+        amount:
+          $ref: '#/components/schemas/AmountDetails'
+        currency:
+          type: string
+          description: Currency type (must match account currencies)
+          enum:
+            - POST_COINS
+            - POST_GOLD
+            - POST_BUCKS
+          example: "POST_COINS"
+        transactionType:
+          $ref: '#/components/schemas/TransactionType'
+    AmountDetails:
+      type: number
+      format: double
+      description: Transaction amount (must be positive)
+      minimum: 0
+      exclusiveMinimum: true
+      example: 10000
+    TransactionType:  
+      type: string
+      description: Type of transaction (deposit / withdrawal)
+      enum:
+        - WITHDRAWAL
+        - DEPOSIT
+      example: "DEPOSIT"
+
+    IdSchema:
+      type: string
+      description: A string identifier
+      example: "123"
+
+    RateLimitInteger:
+      type: integer
+      description: An integer value used for rate limit headers
+      example: 300
+
+    ApiKeyResponse:
+      type: object
+      required:
+        - apiKey
+      properties:
+        apiKey:
+          type: string
+          description: The generated API key
+          example: "123456789"
+
+    CreateAccountResponse:
+      type: object
+      required:
+        - account
+      properties:
+        account:
+          type: object
+          required:
+            - accountId
           properties:
-            statusHistory:
-              type: array
-              description: History of status changes
-              items:
-                $ref: '#/components/schemas/StatusHistoryEntry'
+            accountId:
+              type: string
+              description: The unique identifier of the created account
+              example: "123"
 
-    ActivationListResponse:
+    AccountListResponse:
       type: object
+      required:
+        - accounts
       properties:
-        activations:
+        accounts:
           type: array
           items:
-            $ref: '#/components/schemas/ActivationResponse'
-        pagination:
-          $ref: '#/components/schemas/Pagination'
+            $ref: '#/components/schemas/Account'
 
-    StatusHistoryEntry:
+    GetAccountResponse:
       type: object
+      required:
+        - account
       properties:
-        status:
-          type: string
-          enum: [pending, provisioning, completed, failed, cancelled]
-          example: "pending"
-        timestamp:
-          type: string
-          format: date-time
-          example: "2026-06-01T10:00:00Z"
-        message:
-          type: string
-          example: "Activation request received"
+        account:
+          $ref: '#/components/schemas/Account'
 
-    Address:
+    OwnerNameFilter:
+      type: string
+      description: Filter accounts by owner's full name
+      minLength: 1
+      example: 'Nova Newman'
+
+    TransactionListResponse:
       type: object
+      required:
+        - transactions
       properties:
-        line1:
-          type: string
-          example: "1 Demo Street"
-        suburb:
-          type: string
-          example: "Sydney"
-        state:
-          type: string
-          example: "NSW"
-        postcode:
-          type: string
-          example: "2000"
-        country:
-          type: string
-          example: "AU"
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
 
-    Pagination:
+    CreateTransactionResponse:
       type: object
+      required:
+        - transaction
       properties:
-        page:
-          type: integer
-          example: 1
-        pageSize:
-          type: integer
-          example: 20
-        totalPages:
-          type: integer
-          example: 1
-        totalItems:
-          type: integer
-          example: 1
-        hasNext:
-          type: boolean
-          example: false
-        hasPrevious:
-          type: boolean
-          example: false
+        transaction:
+          type: object
+          required:
+            - transactionId
+          properties:
+            transactionId:
+              type: string
+              description: The unique identifier of the created transaction
+              example: "1"
 
-    ErrorResponse:
+    TransactionResponse:
+      type: object
+      required:
+        - transaction
+      properties:
+        transaction:
+          $ref: '#/components/schemas/Transaction'
+
+    Error:
       type: object
       required:
         - error
-        - message
-        - code
-        - timestamp
       properties:
         error:
-          type: string
-          example: "ACTIVATION_NOT_FOUND"
-        message:
-          type: string
-          example: "The specified activation was not found"
-        details:
           type: object
-          additionalProperties: true
-        code:
-          type: string
-          enum: [VALIDATION_ERROR, AUTHENTICATION_ERROR, RESOURCE_NOT_FOUND, CONFLICT, SERVER_ERROR]
-          example: "RESOURCE_NOT_FOUND"
-        timestamp:
-          type: string
-          format: date-time
-          example: "2026-06-01T10:00:00Z"
+          required:
+            - name
+            - message
+          properties:
+            name:
+              type: string
+              description: Error type identifier
+              example: "validationError"
+            message:
+              type: string
+              description: Human-readable error message
+              example: "Owner name is required and must be a string"
 
   responses:
-    BadRequest:
-      description: Bad request - invalid input
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          examples:
-            validation_error:
-              summary: Validation error
-              value:
-                error: "VALIDATION_ERROR"
-                message: "Invalid request parameters"
-                details:
-                  field: "planCode"
-                  issue: "Unknown plan code"
-                code: "VALIDATION_ERROR"
-                timestamp: "2026-06-01T10:00:00Z"
     Unauthorized:
-      description: Unauthorized - invalid or missing authentication
+      description: Authentication required or API key invalid
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          examples:
-            unauthorized:
-              summary: Authentication required
-              value:
-                error: "UNAUTHORIZED"
-                message: "Authentication token is required"
-                code: "AUTHENTICATION_ERROR"
-                timestamp: "2026-06-01T10:00:00Z"
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              name: "authenticationError"
+              message: "API key is required. Please provide an API key in the x-api-key header."
+    
     Forbidden:
-      description: Forbidden - caller does not have permission to access this activation
+      description: Insufficient permissions to perform this operation
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/Error'
           examples:
-            forbidden:
-              summary: Access denied to activation
+            adminRequired:
+              summary: Admin access required
               value:
-                error: "ACCESS_DENIED"
-                message: "You do not have permission to access this activation"
-                details:
-                  activationId: "act_q1w2e3r4"
-                  requiredScope: "activations:read"
-                code: "AUTHORIZATION_ERROR"
-                timestamp: "2026-06-01T10:00:00Z"                
-    ActivationNotFound:
-      description: Activation not found
+                error:
+                  name: "forbiddenError"
+                  message: "You do not have permissions to perform this action. Admin access required."
+    AccountNotFound:
+      description: The specified account does not exist
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              name: "instanceNotFoundError"
+              message: "The specified account does not exist."
+    
+    TransactionNotFound:
+      description: The specified transaction does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              name: "instanceNotFoundError"
+              message: "The specified transaction does not exist."
+    TransactionValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              name: "validationError"
+              message: "Unable to validate the request body"
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
           examples:
-            activation_not_found:
-              summary: Activation does not exist
+            missingField:
+              summary: Missing required field
               value:
-                error: "ACTIVATION_NOT_FOUND"
-                message: "The specified activation was not found"
-                details:
-                  activationId: "act_invalid01"
-                code: "RESOURCE_NOT_FOUND"
-                timestamp: "2026-06-01T10:00:00Z"
+                error:
+                  name: "validationError"
+                  message: "Owner name is required and must be a string"
+            invalidCurrency:
+              summary: Invalid currency
+              value:
+                error:
+                  name: "validationError"
+                  message: "Currency must be one of: POST_COINS, POST_GOLD, POST_BUCKS"
+            negativeAmount:
+              summary: Invalid amount
+              value:
+                error:
+                  name: "validationError"
+                  message: "Amount must be a positive number"
+    
+    InsufficientFunds:
+      description: Insufficient funds to complete the transaction
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              name: "txInsufficientFunds"
+              message: "Not enough funds in source account to complete transaction."
+    
+    RateLimitExceeded:
+      description: Too many requests - rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              name: "rateLimitExceeded"
+              message: "Too many requests. Maximum 300 requests per minute allowed."
+    
     InternalServerError:
       description: Internal server error
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          examples:
-            internal_error:
-              summary: Internal server error
-              value:
-                error: "INTERNAL_SERVER_ERROR"
-                message: "An unexpected error occurred"
-                code: "SERVER_ERROR"
-                timestamp: "2026-06-01T10:00:00Z"
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              name: "serverError"
+              message: "An unexpected error occurred"
